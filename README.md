@@ -42,7 +42,7 @@ If dev shows **`Cannot find module './chunks/vendor-chunks/next.js'`** or random
 5. **First deploy** — After the first successful deploy, run **`npm run db:seed`** once against production (from your machine with `DATABASE_URL` pointing at prod, or Neon’s SQL editor / a one-off job) if you want seeded feature rows.
 
 ## Sign-in (NextAuth.js)
-**`/login`** is the only auth screen: **Welcome back** (email/password and optional GitHub) and, when Postgres is configured, **Create account** on the same page below. Legacy **`/signup`** redirects to **`/login`**. **`/`** and the rest of the app require a session; guests are sent to **`/login`** via **`middleware.js`** (NextAuth **`withAuth`**), with **`callbackUrl`** preserved.
+**`/login`** is the only auth screen: **Welcome back** (email/password and optional GitHub) and, when Postgres is configured, **Create account** on the same page (side by side on wide screens, stacked on small). Legacy **`/signup`** redirects to **`/login`**. **`/`** and the rest of the app require a session; guests are sent to **`/login`** via **`middleware.js`** (NextAuth **`withAuth`**), with **`callbackUrl`** preserved.
 
 **Public (no session):** **`/login`**, **`/api/auth/*`**, **`/api/health`**, **`/api/signup`** (POST register — requires **`DATABASE_URL`**).
 
@@ -83,6 +83,6 @@ If nothing is configured (no **`NEXTAUTH_SECRET`**, or no Postgres / env / GitHu
 
 ## Pages
 - / → Marketing landing (session required; middleware → **`/login`** if not signed in)
-- /login → sign in + create account on the same page (stacked sections when DB sign-up is on). **`/signup`** → **`/login`**. Old **`/waitlist`** → **`/login`**.
+- /login → sign in + create account on the same page (two columns on large viewports when DB sign-up is on). **`/signup`** → **`/login`**. Old **`/waitlist`** → **`/login`**.
 - /dashboard → Product catalog + links to tools
 - /tracker, /prep, /resume, /pay → session required (same middleware)

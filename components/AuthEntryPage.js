@@ -2,11 +2,14 @@ import Layout from "./Layout";
 import LoginSignupPanel from "./LoginSignupPanel";
 
 export default function AuthEntryPage({ auth }) {
-  const { configured } = auth;
+  const { configured, signup, credentials } = auth;
+  const dualAuthColumns = configured && signup && credentials;
 
   return (
     <Layout>
-      <div className="mx-auto flex max-w-md flex-col items-stretch">
+      <div
+        className={`mx-auto flex w-full max-w-full flex-col items-stretch px-4 sm:px-0 ${dualAuthColumns ? "max-w-4xl" : "max-w-md"}`}
+      >
         {!configured ? (
           <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-6 text-sm text-amber-100">
             <p className="font-semibold text-amber-50">Sign-in is not fully configured</p>

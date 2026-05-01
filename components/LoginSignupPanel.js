@@ -9,7 +9,7 @@ export default function LoginSignupPanel({ auth }) {
   const router = useRouter();
   const { credentials, signup, github, configured } = auth;
   const showBoth = credentials && github;
-  /** Postgres sign-up API on — show full create-account form on this page below sign-in. */
+  /** Postgres sign-up API on — show create-account beside sign-in on large screens. */
   const showSignupSection = signup && credentials;
 
   const [showCreatedBanner, setShowCreatedBanner] = useState(false);
@@ -123,15 +123,28 @@ export default function LoginSignupPanel({ auth }) {
     return null;
   }
 
+  const gridTwoCol = showSignupSection;
+
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-left shadow-xl backdrop-blur sm:p-8">
       {showCreatedBanner ? (
         <p className="mb-6 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-center text-sm text-emerald-100">
-          Account created. Sign in with your email and password below, then you&apos;ll go to the home page.
+          Account created. Use <strong className="text-emerald-50">Sign in</strong> with the same email and password to continue to the home page.
         </p>
       ) : null}
 
-      <section id="signin-section" aria-labelledby="signin-heading" className="scroll-mt-6">
+      <div
+        className={
+          gridTwoCol
+            ? "grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-start lg:gap-0"
+            : "grid grid-cols-1"
+        }
+      >
+        <section
+          id="signin-section"
+          aria-labelledby="signin-heading"
+          className={`scroll-mt-6 min-w-0 ${gridTwoCol ? "lg:pr-8" : ""}`}
+        >
         <h2 id="signin-heading" className="text-lg font-semibold text-white">
           Welcome back
         </h2>
@@ -209,8 +222,11 @@ export default function LoginSignupPanel({ auth }) {
         ) : null}
       </section>
 
-      {showSignupSection ? (
-        <section className="mt-10 border-t border-slate-800 pt-8" aria-labelledby="signup-heading">
+      {showSignupSection && (
+        <section
+          className="min-w-0 border-t border-slate-800 pt-10 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0"
+          aria-labelledby="signup-heading"
+        >
           <h2 id="signup-heading" className="text-lg font-semibold text-white">
             Create account
           </h2>
@@ -289,7 +305,8 @@ export default function LoginSignupPanel({ auth }) {
             </button>
           </form>
         </section>
-      ) : null}
+      )}
+      </div>
     </div>
   );
 }
