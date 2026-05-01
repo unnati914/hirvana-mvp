@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import AuthNav from "./AuthNav";
 import logoImg from "../images/_BmLyLLF_400x400.png";
 
 const nav = [
   { href: "/", label: "Home" },
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/waitlist", label: "Waitlist" },
   { href: "/pay", label: "Pricing" },
 ];
 
@@ -16,10 +16,10 @@ export default function Layout({ children, title }) {
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">
       <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-3 px-4 sm:px-6">
           <Link
             href="/"
-            className="flex items-center gap-3 text-lg font-semibold tracking-tight text-white transition hover:opacity-90"
+            className="flex shrink-0 items-center gap-3 text-lg font-semibold tracking-tight text-white transition hover:opacity-90"
           >
             <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-lg shadow-glow ring-1 ring-white/15">
               <Image
@@ -34,7 +34,7 @@ export default function Layout({ children, title }) {
             <span className="sr-only">Hirvana</span>
           </Link>
           <nav
-            className="flex max-w-[min(100%,18rem)] flex-1 justify-end gap-0.5 overflow-x-auto sm:max-w-none sm:flex-none sm:justify-center sm:gap-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex min-w-0 max-w-[min(100%,14rem)] flex-1 justify-end gap-0.5 overflow-x-auto sm:max-w-none sm:flex-none sm:justify-center sm:gap-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             aria-label="Main"
           >
             {nav.map(({ href, label }) => {
@@ -54,6 +54,7 @@ export default function Layout({ children, title }) {
               );
             })}
           </nav>
+          <AuthNav />
         </div>
       </header>
 

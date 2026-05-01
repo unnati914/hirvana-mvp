@@ -2,8 +2,8 @@
   {
     "id": "resume-ai",
     "title": "Resume AI",
-    "description": "Role-targeted drafts and bullet refinements aligned with how ATS and recruiters scan resumes.",
-    "status": "soon"
+    "description": "Upload PDF/DOCX/TXT or paste text — quick scan, JD keywords, optimiser (rules + optional GPT).",
+    "status": "live"
   },
   {
     "id": "auto-apply",
@@ -20,8 +20,8 @@
   {
     "id": "interview-copilot",
     "title": "Interview copilot",
-    "description": "Practice with realistic prompts, timed answers, and instant rubric-style feedback before the real call.",
-    "status": "beta"
+    "description": "MVP: rotating practice questions with space to outline answers — timed rubric feedback comes later.",
+    "status": "live"
   },
   {
     "id": "job-radar",
@@ -45,6 +45,6 @@
     "id": "tracker",
     "title": "Application tracker",
     "description": "Pipeline stages, follow-up reminders, and notes so nothing falls through after you hit submit.",
-    "status": "beta"
+    "status": "live"
   }
 ]

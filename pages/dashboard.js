@@ -1,6 +1,7 @@
-import Link from "next/link";
 import { useFeaturesCatalog } from "../hooks/useFeaturesCatalog";
 import Layout from "../components/Layout";
+import FeatureActions from "../components/FeatureActions";
+import Link from "next/link";
 
 const statusBadge = {
   soon: "bg-slate-800 text-slate-400",
@@ -39,12 +40,7 @@ export default function Dashboard() {
               </span>
             </div>
             <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-400">{description}</p>
-            <Link
-              href="/waitlist"
-              className="mt-6 inline-flex w-fit items-center text-sm font-semibold text-blue-400 transition group-hover:text-blue-300"
-            >
-              Get notified →
-            </Link>
+            <FeatureActions featureId={id} />
           </article>
         ))}
       </div>

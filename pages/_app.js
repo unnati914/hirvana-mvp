@@ -1,3 +1,4 @@
+import { SessionProvider } from "next-auth/react";
 import { Inter } from "next/font/google";
 import "../styles/globals.css";
 
@@ -6,10 +7,12 @@ const inter = Inter({
   variable: "--font-sans",
 });
 
-export default function App({ Component, pageProps }) {
+export default function App({ Component, pageProps: { session, ...pageProps } }) {
   return (
-    <div className={`${inter.variable} font-sans`}>
-      <Component {...pageProps} />
-    </div>
+    <SessionProvider session={session}>
+      <div className={`${inter.variable} font-sans`}>
+        <Component {...pageProps} />
+      </div>
+    </SessionProvider>
   );
 }

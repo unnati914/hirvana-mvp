@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import Layout from "../components/Layout";
 
 const NOTE = "Hirvana early access";
@@ -61,7 +62,7 @@ export default function Pay() {
             {[
               "Resume AI when it launches",
               "Auto-apply workflows",
-              "Priority waitlist for 1:1 mentorship",
+              "Priority access for 1:1 mentorship",
               "Product updates and templates",
             ].map((item) => (
               <li key={item} className="flex gap-3">
@@ -96,6 +97,14 @@ export default function Pay() {
             >
               Pay ₹499 in UPI app
             </button>
+            <p className="text-center text-xs text-slate-500">
+              The{" "}
+              <Link href="/resume" className="font-medium text-blue-400 hover:text-blue-300">
+                Resume hub
+              </Link>{" "}
+              (scan, JD keywords, optimiser) is free for everyone — early access bundles the rest of the
+              roadmap.
+            </p>
           </div>
         </div>
       </div>
