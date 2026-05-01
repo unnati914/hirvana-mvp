@@ -1,6 +1,6 @@
 import Link from "next/link";
+import { useFeaturesCatalog } from "../hooks/useFeaturesCatalog";
 import Layout from "../components/Layout";
-import { DEFAULT_FEATURES } from "../lib/features-seed";
 
 const statusBadge = {
   soon: "bg-slate-800 text-slate-400",
@@ -14,8 +14,8 @@ const statusLabel = {
   live: "Live",
 };
 
-export default function Dashboard({ features }) {
-  const list = Array.isArray(features) && features.length ? features : DEFAULT_FEATURES;
+export default function Dashboard() {
+  const list = useFeaturesCatalog();
 
   return (
     <Layout title="Dashboard">
@@ -59,25 +59,4 @@ export default function Dashboard({ features }) {
       </div>
     </Layout>
   );
-}
-
-export async function getStaticProps() {
-  try {
-    let features = DEFAULT_FEATURES;
-    const mod = await import("../lib/features-store");
-    const loaded = await mod.getFeatures();
-    if (Array.isArray(loaded) && loaded.length) {
-      features = loaded;
-    }
-    return {
-      props: { features },
-      revalidate: 60,
-    };
-  } catch (e) {
-    console.error("dashboard getStaticProps", e);
-    return {
-      props: { features: DEFAULT_FEATURES },
-      revalidate: 60,
-    };
-  }
 }
