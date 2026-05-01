@@ -1,0 +1,8 @@
+node_modules
+.next
+.DS_Store
+data/waitlist.json
+.env
+.env.local
+.env.*.local
+
