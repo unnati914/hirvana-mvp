@@ -2,8 +2,22 @@ import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 
 /**
- * @param {{ auth: { credentials: boolean; signup: boolean; github: boolean; configured: boolean } }} props
+ * Password managers often autofill without firing React onChange, so controlled
+ * state stays empty. Prefer FormData from the submitted form, fall back to state.
  */
+function pickField(formData, name, stateValue) {
+  const v = formData.get(name);
+  if (v != null && String(v).length > 0) return String(v);
+  return stateValue ?? "";
+}
+
+function signInFailureMessage(error) {
+  if (!error || error === "CredentialsSignin") return "Wrong email or password.";
+  if (error === "Configuration")
+    return "Auth is misconfigured on the server (check NEXTAUTH_URL and NEXTAUTH_SECRET).";
+  return `Sign-in failed (${error}). Try again or refresh the page.`;
+}
+
 export default function LoginSignupPanel({ auth }) {
   const { credentials, signup, github, configured } = auth;
   const showBoth = credentials && github;
@@ -47,15 +61,20 @@ export default function LoginSignupPanel({ auth }) {
     e.preventDefault();
     setSignInError("");
     setSignInBusy(true);
+    const fd = new FormData(e.currentTarget);
+    const emailTrim = pickField(fd, "email", email).trim();
+    const passwordVal = pickField(fd, "password", password);
+    if (emailTrim) setEmail(emailTrim);
+    if (passwordVal) setPassword(passwordVal);
     try {
       const res = await signIn("credentials", {
         redirect: false,
-        email,
-        password,
+        email: emailTrim,
+        password: passwordVal,
         callbackUrl: "/",
       });
       if (res?.error) {
-        setSignInError("Invalid email or password.");
+        setSignInError(signInFailureMessage(res.error));
         return;
       }
       if (res?.ok) {
@@ -67,6 +86,9 @@ export default function LoginSignupPanel({ auth }) {
         return;
       }
       setSignInError("Could not continue. Try again.");
+    } catch (err) {
+      console.error("signIn", err);
+      setSignInError("Network error — check your connection and try again.");
     } finally {
       setSignInBusy(false);
     }
@@ -107,8 +129,13 @@ export default function LoginSignupPanel({ auth }) {
 
   async function onSignUp(e) {
     e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const nameRaw = pickField(fd, "name", suName).trim();
+    const emailRaw = pickField(fd, "email", suEmail).trim();
+    const pw = pickField(fd, "password", suPassword);
+    const cf = pickField(fd, "confirm", suConfirm);
     setSuError("");
-    if (suPassword !== suConfirm) {
+    if (pw !== cf) {
       setSuError("Passwords do not match.");
       return;
     }
@@ -117,7 +144,7 @@ export default function LoginSignupPanel({ auth }) {
       const res = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: suName, email: suEmail, password: suPassword }),
+        body: JSON.stringify({ name: nameRaw, email: emailRaw, password: pw }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -125,9 +152,9 @@ export default function LoginSignupPanel({ auth }) {
         return;
       }
 
-      const emailLower = suEmail.trim().toLowerCase();
+      const emailLower = emailRaw.toLowerCase();
       if (credentials) {
-        const lastSi = await signInAfterSignup(emailLower, suPassword);
+        const lastSi = await signInAfterSignup(emailLower, pw);
         if (lastSi === true) return;
 
         const err = lastSi && typeof lastSi === "object" ? lastSi.error : null;
@@ -139,7 +166,7 @@ export default function LoginSignupPanel({ auth }) {
               : "Account created, but automatic sign-in failed. Use Sign in below.";
         setSuError(hint);
         setEmail(emailLower);
-        setPassword(suPassword);
+        setPassword(pw);
         setSignInError("");
         focusSignIn();
         return;
