@@ -1,5 +1,6 @@
 import Layout from "./Layout";
 import LoginSignupPanel from "./LoginSignupPanel";
+import RedirectIfSession from "./RedirectIfSession";
 
 export default function AuthEntryPage({ auth }) {
   const { configured, signup, credentials } = auth;
@@ -7,6 +8,7 @@ export default function AuthEntryPage({ auth }) {
 
   return (
     <Layout>
+      {configured ? <RedirectIfSession /> : null}
       <div
         className={`mx-auto flex w-full max-w-full flex-col items-stretch px-4 sm:px-0 ${dualAuthColumns ? "max-w-4xl" : "max-w-md"}`}
       >

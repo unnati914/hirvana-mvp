@@ -48,6 +48,14 @@ If dev shows **`Cannot find module './chunks/vendor-chunks/next.js'`** or random
 
 **Admin API without user session:** any **`/api/*`** request that sends a valid **`HIRVANA_ADMIN_SECRET`** as **`Authorization: Bearer …`** or **`x-hirvana-admin-secret`** (same as `lib/admin-auth.js`) is allowed through middleware so scripts can **`PUT /api/features`**, etc.
 
+### Deploy / site shows 500 or plain “middleware error”
+- **`NEXTAUTH_URL`**: must be a **full URL** with protocol (`https://…`). In Vercel, set it to your production origin (or use `https://${VERCEL_URL}` in the dashboard’s auto env). **Do not leave the value empty** — an empty string can crash NextAuth’s middleware on every request.
+- **`NEXTAUTH_SECRET`**: required in production (generate with `openssl rand -base64 32`).
+- **Build fails on `prisma migrate deploy`**: fix **`DATABASE_URL`** in Vercel and ensure the DB is reachable; migrations must apply before the app serves traffic.
+
+### `ERR_TOO_MANY_REDIRECTS` (often `/` ↔ `/login`)
+Usually fixed in-app by **not** server-redirecting away from `/login` when a session exists (Edge `getToken` vs Node `getServerSession` can disagree). This repo uses a **client** redirect when `useSession()` is authenticated. Also confirm **`NEXTAUTH_URL`** matches the URL you open (including `https://` and no `www` mismatch) and clear site cookies once after changing auth env.
+
 Configure **`NEXTAUTH_SECRET`** and **`NEXTAUTH_URL`**, then enable **at least one** sign-in path (Postgres **`User`** accounts, env-only user, and/or GitHub).
 
 ### Sign up (new accounts)
