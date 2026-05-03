@@ -10,6 +10,8 @@ const authHandler = withAuth({
   callbacks: {
     authorized: ({ req, token }) => {
       const path = req.nextUrl.pathname;
+      if (path === "/") return true;
+      if (path.startsWith("/pay")) return true;
       if (path.startsWith("/login")) return true;
       if (path.startsWith("/signup")) return true;
       if (path.startsWith("/api/auth")) return true;

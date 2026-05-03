@@ -42,9 +42,9 @@ If dev shows **`Cannot find module './chunks/vendor-chunks/next.js'`** or random
 5. **First deploy** — After the first successful deploy, run **`npm run db:seed`** once against production (from your machine with `DATABASE_URL` pointing at prod, or Neon’s SQL editor / a one-off job) if you want seeded feature rows.
 
 ## Sign-in (NextAuth.js)
-**`/login`** is the only auth screen: **Welcome back** (email/password and optional GitHub) and, when Postgres is configured, **Create account** on the same page (side by side on wide screens, stacked on small). Legacy **`/signup`** redirects to **`/login`**. **`/`** and the rest of the app require a session; guests are sent to **`/login`** via **`middleware.js`** (NextAuth **`withAuth`**), with **`callbackUrl`** preserved.
+**`/login`** is the only auth screen: **Welcome back** (email/password and optional GitHub) and, when Postgres is configured, **Create account** on the same page (side by side on wide screens, stacked on small). Legacy **`/signup`** redirects to **`/login`**. Most app routes require a session; guests are sent to **`/login`** via **`middleware.js`** (NextAuth **`withAuth`**), with **`callbackUrl`** preserved.
 
-**Public (no session):** **`/login`**, **`/api/auth/*`**, **`/api/health`**, **`/api/signup`** (POST register — requires **`DATABASE_URL`**).
+**Public (no session):** **`/`** (marketing landing), **`/pay`** (pricing / UPI instructions), **`/login`**, **`/api/auth/*`**, **`/api/health`**, **`/api/signup`** (POST register — requires **`DATABASE_URL`**).
 
 **Admin API without user session:** any **`/api/*`** request that sends a valid **`HIRVANA_ADMIN_SECRET`** as **`Authorization: Bearer …`** or **`x-hirvana-admin-secret`** (same as `lib/admin-auth.js`) is allowed through middleware so scripts can **`PUT /api/features`**, etc.
 

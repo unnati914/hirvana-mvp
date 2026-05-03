@@ -1,18 +1,9 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Layout from "../components/Layout";
 
-const NOTE = "Hirvana early access";
-/** Shown in UI; UPI `am` uses two decimals when prefilled. */
+/** Shown in UI copy; amount text for instructions only (no upi:// deep link — avoids OS opening WhatsApp). */
 const DEFAULT_PRICE_RUPEES = "499.00";
-
-function buildUpiDeepLink(pa, pn, tn, amount) {
-  const params = { pa, pn, cu: "INR", tn };
-  if (amount && String(amount).trim()) {
-    params.am = String(amount).trim();
-  }
-  return `upi://pay?${new URLSearchParams(params).toString()}`;
-}
 
 export default function Pay() {
   const [copied, setCopied] = useState(false);
@@ -20,11 +11,6 @@ export default function Pay() {
   const payeeName = process.env.NEXT_PUBLIC_UPI_PAYEE_NAME || "Hirvana";
   const upiAmount =
     process.env.NEXT_PUBLIC_UPI_AMOUNT?.trim?.() || DEFAULT_PRICE_RUPEES;
-
-  const upiHref = useMemo(
-    () => buildUpiDeepLink(upiId, payeeName, NOTE, upiAmount),
-    [upiId, payeeName, upiAmount]
-  );
 
   async function copyUpi() {
     try {
@@ -36,15 +22,14 @@ export default function Pay() {
     }
   }
 
-  function openUpiPay() {
-    window.location.assign(upiHref);
-  }
-
   return (
     <Layout title="Early access">
       <p className="-mt-4 mb-10 max-w-xl text-slate-400">
-        One-time founding-member access for <span className="font-semibold text-slate-200">₹499</span>. Pay with any
-        UPI app using the ID below or the one-tap link (amount prefilled where your app supports it).
+        One-time founding-member access for <span className="font-semibold text-slate-200">₹499</span>. Open{" "}
+        <span className="text-slate-200">Google Pay, PhonePe, or Paytm</span> → pay to the UPI ID below (note{" "}
+        <span className="font-mono text-slate-300">₹{upiAmount}</span> / payee <span className="text-slate-300">{payeeName}</span>
+        ). We don&apos;t use one-tap <span className="font-mono text-slate-500">upi://</span> links here because many phones
+        send those to WhatsApp by default.
       </p>
 
       <div className="mx-auto max-w-lg">
@@ -60,7 +45,7 @@ export default function Pay() {
           </div>
           <ul className="space-y-3 px-8 py-6 text-sm text-slate-300">
             {[
-              "Resume AI when it launches",
+              "Resume AI depth (beyond the free /resume hub)",
               "Auto-apply workflows",
               "Priority access for 1:1 mentorship",
               "Product updates and templates",
@@ -89,14 +74,6 @@ export default function Pay() {
                 </button>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={openUpiPay}
-              aria-label={`Open UPI app to pay ₹499 to ${upiId}`}
-              className="flex w-full cursor-pointer items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-sky-500 py-3.5 text-base font-semibold text-white transition hover:from-blue-400 hover:to-sky-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900"
-            >
-              Pay ₹499 in UPI app
-            </button>
             <p className="text-center text-xs text-slate-500">
               The{" "}
               <Link href="/resume" className="font-medium text-blue-400 hover:text-blue-300">

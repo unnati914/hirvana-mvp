@@ -1,10 +1,20 @@
+import Head from "next/head";
 import Layout from "../components/Layout";
-import LandingMarketing from "../components/LandingMarketing";
+import HirvanaLanding from "../components/HirvanaLanding";
 
 export default function Home() {
   return (
-    <Layout>
-      <LandingMarketing />
-    </Layout>
+    <>
+      <Head>
+        <title>Hirvana — career prep with AI</title>
+        <meta
+          name="description"
+          content="Resume hub, interview practice, and application tracking for students and early-career builders."
+        />
+      </Head>
+      <Layout>
+        <HirvanaLanding />
+      </Layout>
+    </>
   );
 }
