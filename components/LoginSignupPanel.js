@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/router";
 
 /**
  * @param {{ auth: { credentials: boolean; signup: boolean; github: boolean; configured: boolean } }} props
  */
 export default function LoginSignupPanel({ auth }) {
-  const router = useRouter();
   const { credentials, signup, github, configured } = auth;
   const showBoth = credentials && github;
   /** Postgres sign-up API on — show create-account beside sign-in on large screens. */
@@ -61,13 +59,50 @@ export default function LoginSignupPanel({ auth }) {
         return;
       }
       if (res?.ok) {
-        await router.push("/");
+        const dest =
+          typeof res.url === "string" && (res.url.startsWith("/") || res.url.startsWith("http"))
+            ? res.url
+            : "/";
+        window.location.assign(dest);
         return;
       }
       setSignInError("Could not continue. Try again.");
     } finally {
       setSignInBusy(false);
     }
+  }
+
+  /**
+   * After POST /api/signup the new row may not be visible to the next serverless
+   * invocation immediately; retry credentials sign-in, then hard-navigate so the
+   * session cookie is always applied before hitting middleware.
+   */
+  async function signInAfterSignup(emailLower, password) {
+    await new Promise((r) => setTimeout(r, 150));
+    let last = null;
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      if (attempt > 0) await new Promise((r) => setTimeout(r, 180 * attempt));
+      try {
+        last = await signIn("credentials", {
+          redirect: false,
+          email: emailLower,
+          password,
+          callbackUrl: "/",
+        });
+      } catch (err) {
+        console.error("signIn after signup", err);
+        last = { ok: false, error: "NetworkError" };
+      }
+      if (last?.ok) {
+        const dest =
+          typeof last.url === "string" && (last.url.startsWith("/") || last.url.startsWith("http"))
+            ? last.url
+            : "/";
+        window.location.assign(dest);
+        return true;
+      }
+    }
+    return last;
   }
 
   async function onSignUp(e) {
@@ -92,20 +127,20 @@ export default function LoginSignupPanel({ auth }) {
 
       const emailLower = suEmail.trim().toLowerCase();
       if (credentials) {
-        const si = await signIn("credentials", {
-          redirect: false,
-          email: emailLower,
-          password: suPassword,
-          callbackUrl: "/",
-        });
-        if (si?.ok) {
-          await router.replace("/");
-          return;
-        }
+        const lastSi = await signInAfterSignup(emailLower, suPassword);
+        if (lastSi === true) return;
+
+        const err = lastSi && typeof lastSi === "object" ? lastSi.error : null;
+        const hint =
+          err === "CredentialsSignin"
+            ? "Account created. Sign-in did not pick up the new password yet—wait a few seconds, then tap Continue below (or refresh the page)."
+            : err
+              ? `Account created, but automatic sign-in failed (${err}). Use Sign in below.`
+              : "Account created, but automatic sign-in failed. Use Sign in below.";
+        setSuError(hint);
         setEmail(emailLower);
         setPassword(suPassword);
-        setShowCreatedBanner(true);
-        setSignInError("Could not sign you in automatically. Tap Continue below.");
+        setSignInError("");
         focusSignIn();
         return;
       }
